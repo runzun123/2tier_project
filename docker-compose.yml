@@ -1,11 +1,11 @@
 services:
   mysql:
     container_name: mysql
-    image: mysql
+    image: mysql:latest
     restart: always
     environment:
-      - MYSQL_ROOT_PASSWORD: "root"
-      - MYSQL_DATABASE: "FLASK_db"
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: FLASK_db
     ports:
       - "3306:3306"
     volumes:
@@ -13,13 +13,13 @@ services:
 
     networks:
       - two-tier
+
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 60s
-
 
   flask-app:
     container_name: two-tier-app
@@ -29,13 +29,14 @@ services:
       - "5000:5000"
 
     environment:
-      - MYSQL_HOST=mysql
-      - MYSQL_USER=root
-      - MYSQL_PASSWORD=root
-      - MYSQL_DB=FLASK_db
+      MYSQL_HOST: mysql
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+      MYSQL_DB: FLASK_db
 
     networks:
       - two-tier
+
     healthcheck:
       test: ["CMD", "curl -f http://localhost:5000/health || exit 1"]
       interval: 10s
@@ -47,8 +48,8 @@ services:
       mysql:
         condition: service_healthy
 
-  volumes:
-    mysql_data:
+volumes:
+  mysql_data:
 
-  networks:
-    two-tier:
+networks:
+  two-tier:
